@@ -121,12 +121,11 @@ const MenuProps = {
 
 
 const names = {
-    'Первый': 'first',
-    'Второй': 'second',
-    'Третий': 'third',
-    'Четвертый': 'fourth',
-    'Пятый': 'fifth',
-    'Шестой': 'sixth'
+    'ИИН/БИН Субъекта': 'cfmMainCode',
+    'Внутренний для СФМ номер сообщения': 'messNumber',
+    'Код субъекта финансового мониторинга': 'cfmName',
+    'Номер операции': 'operNumber',
+    'ИИН/БИН Покупателя': 'memberMaincode',
 }
   
 
@@ -145,22 +144,112 @@ function OracleTable(props) {
     const labelStyle = {
         fontSize: '14px', /* set the desired font size */
     };
-    const [option, setOption] = React.useState('');
-    const [filterValues, setFilterValues] = React.useState([]);
+
+    const [mainList, setMainList] = React.useState([])
+    const [firstFilter, setFirst] = React.useState('')
+    const [secondFilter, setSecond] = React.useState('')
+    const [thirdFilter, setThird] = React.useState('')
+    const [fourthFilter, setFourth] = React.useState('')
+    const [fifthFilter, setFifth] = React.useState('')
+    const [aOr1, setAOr1] = React.useState('none')
+    const [aOr2, setAOr2] = React.useState('none')
+    const [aOr3, setAOr3] = React.useState('none')
+    const [aOr4, setAOr4] = React.useState('none')
+    const [value1, set1] = React.useState('')
+    const [value2, set2] = React.useState('')
+    const [value3, set3] = React.useState('')
+    const [value4, set4] = React.useState('')
+    const [value5, set5] = React.useState('')
 
     const nameArray = Object.entries(names);
-    const handleChange = (event) => {
-        setOption(event.target.value);
-    };
 
+    const handleFirst = (event) => {
+        setFirst(event.target.value)
+    }
+    const handleSecond = (event) => {
+        setSecond(event.target.value)
+    }
+    const handleThird = (event) => {
+        setThird(event.target.value)
+    }
+    const handleFourth = (event) => {
+        setFourth(event.target.value)
+    }
+    const handleFifth = (event) => {
+        setFifth(event.target.value)
+    }
+
+    
+    React.useEffect(() => {
+        if (aOr1 == 'none') {
+            setAOr2('none')
+            setAOr3('none')
+            setAOr4('none')
+            setSecond('')
+            setThird('')
+            setFourth('')
+            setFifth('')
+            set2('')
+            set3('')
+            set4('')
+            set5('')
+        }
+    }, [aOr1])
+    React.useEffect(() => {
+        if (aOr2 == 'none') {
+            setAOr3('none')
+            setAOr4('none')
+            setThird('')
+            setFourth('')
+            setFifth('')
+            set3('')
+            set4('')
+            set5('')
+        }
+    }, [aOr2])
+    React.useEffect(() => {
+        if (aOr3 == 'none') {
+            setAOr4('none')
+            setFourth('')
+            setFifth('')
+            set4('')
+            set5('')
+        }
+    }, [aOr3])
+    React.useEffect(() => {
+        if (aOr4 == 'none') {
+            setAOr4('none')
+            setFifth('')
+            set5('')
+        }
+    }, [aOr4])
+    
     const getData = () => {
         setLoading(true)
         const request = axios.CancelToken.source()
-        // axios.get('', {
-            //     cancelToken: request.token
-            // }).then({
-                //     //blabla
-        // })
+        const req = {
+            filter1: firstFilter,
+            filter2: secondFilter,
+            filter3: thirdFilter,
+            filter4: fourthFilter,
+            filter5: fifthFilter,
+            aOr1,
+            aOr2,
+            aOr3,
+            aOr4,
+            value1,
+            value2,
+            value3,
+            value4,
+            value5
+        }
+        axios.get('http://localhost:1415/get', {params: req}, {
+                cancelToken: request.token
+            }).then(res => {
+                console.log(res.data)
+                setMainList(res.data)
+                setLoading(false)
+            })
 
 
         return () => {
@@ -169,16 +258,6 @@ function OracleTable(props) {
             setLoading(false)
         }
     }
-
-    const handleChangeList = (event) => {
-        const {
-          target: { value },
-        } = event;
-        setFilterValues(
-          // On autofill we get a stringified value.
-          typeof value === 'string' ? value.split(',') : value,
-        );
-    };
 
     const beforeTableEncode = (data) => {
         const modifiedData = data.map((item) => {
@@ -194,115 +273,606 @@ function OracleTable(props) {
     
 
     const download = () => {
-        const data = [
-            {
-                messOfmId: "Temirlan", 
-                messNumber: "Yessenuly", 
-                operDopInfo: 19
-            },
-            {
-                messOfmId: "Damir", 
-                messNumber: "Begenov", 
-                operDopInfo: 19
-            },
-            {
-                messOfmId: "Maku", 
-                messNumber: "Kuanyshbekov", 
-                operDopInfo: 133
-            },
-            {
-                messOfmId: "Asanali", 
-                messNumber: "Ospan", 
-                operDopInfo: 1123},
-            {
-                messOfmId: "Yernar", 
-                messNumber: "Bolat", 
-                operDopInfo: 112
-            },
-        ];
+        const data = mainList
         const fileName = "set"
         const exportType = exportFromJSON.types.csv
-        exportFromJSON({data, fileName, beforeTableEncode, exportType})
+        const encoding = 'windows-1252'
+        exportFromJSON({data, fileName, beforeTableEncode, exportType, encoding})
     }
     return (
         <div className="wholeBlock">
             <div className="searchBar">
-                <FormControl sx={{ m: 1, minWidth: 120, width: '90%' }}>
-                    <InputLabel id="demo-simple-select-helper-label">Опция</InputLabel>
-                    <Select
-                        labelId="demo-simple-select-helper-label"
-                        id="demo-simple-select-helper"
-                        value={option}
-                        label="Опция"
-                        onChange={handleChange}
-                        // size='small'
-                        SelectProps={{ style: { backgroundColor: '#fff' } }}
-                    >
-                        <MenuItem value={'none'}></MenuItem>
-                        <MenuItem value={'iin'}>ИИН</MenuItem>
-                        <MenuItem value={'bin'}>БИН</MenuItem>
-                    </Select>
-                    <FormHelperText>Выберите опцию</FormHelperText>
-                </FormControl>
-                {option === 'iin' && (
-                    <>
-                        <TextField sx={{width: '90%', p: 0}} style={{ margin: '0 auto', marginBottom: '15px'}} InputLabelProps={{style: labelStyle}} id="outlined-basic" label="ИИН" variant="outlined" />
-                        <TextField sx={{width: '90%', p: 0}} style={{ margin: '0 auto', marginBottom: '15px'}} InputLabelProps={{style: labelStyle}} id="outlined-basic" label="ID" variant="outlined" />
-                        <FormControl sx={{ m: 1, width: '90%' }} style={{ margin: '0 auto', marginBottom: '15px'}}>
-                            <InputLabel id="demo-multiple-chip-label">Фильтр</InputLabel>
+                <FormControl size= "small" sx={{ m: 1, width: '90%' }} style={{ margin: '0 auto', marginBottom: '15px'}}>
+                            <InputLabel id="demo-simple-select-label">Фильтр</InputLabel>
                             <Select
-                                labelId="demo-multiple-chip-label"
-                                id="demo-multiple-chip"
-                                multiple
-                                value={filterValues}
-                                onChange={handleChangeList}
-                                input={<OutlinedInput id="select-multiple-chip" label="Фильтр" />}
-                                renderValue={(selected) => (
-                                    <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 0.5 }}>
-                                        {selected.map((value) => (
-                                            <Chip key={value} sx={{borderRadius: '3px'}} label={value} />
-                                        ))}
-                                    </Box>
-                                )}
+                                labelId="demo-simple-select-label"
+                                id="demo-simple-select-label"
+                                label = "Фильтр"                                
+                                value={firstFilter}
+                                onChange={handleFirst}
                                 MenuProps={MenuProps}
                                 >
-                                {nameArray.map(([name, value]) => (
-                                    <MenuItem
-                                        key={value}
-                                        value={name}
-                                        style={getStyles(name, filterValues, theme)}
+                                    <MenuItem value={'cfmMainCode'}>ИИН/БИН Субъекта</MenuItem>
+                                    <MenuItem value={'messNumber'}>Внутренний для СФМ номер сообщения</MenuItem>
+                                    <MenuItem value={'cfmName'}>Код субъекта финансового мониторинга</MenuItem>
+                                    <MenuItem value={'operNumber'}>Номер операции</MenuItem>
+                                    <MenuItem value={'memberMaincode'}>ИИН/БИН Покупателя</MenuItem>
+                            </Select>
+                </FormControl>
+                {firstFilter == 'cfmMainCode' && (
+                    <>
+                        <TextField size= "small" sx={{width: '90%', p: 0}} style={{ margin: '0 auto', marginBottom: '15px'}} 
+                        InputLabelProps={{style: labelStyle}} id="outlined-basic" 
+                        label="ИИН/БИН Субъекта" variant="outlined" value={value1} onChange={event => (set1(event.target.value))} />
+                        <FormControl size= "small" sx={{ m: 1, width: '90%' }} style={{ margin: '0 auto', marginBottom: '15px'}}>
+                            <InputLabel id="demo-simple-select-label">И/ИЛИ</InputLabel>
+                                <Select
+                                    labelId="demo-simple-select-label"
+                                    id="demo-simple-select-label"
+                                    label = "И/ИЛИ"                                
+                                    value={aOr1}
+                                    onChange={event => {
+                                        setAOr1(event.target.value)
+                                    }}
+                                    MenuProps={MenuProps}
                                     >
-                                    {name}
-                                    </MenuItem>
-                                ))}
+                                        <MenuItem value={'none'}>...</MenuItem>
+                                        <MenuItem value={'and'}>И</MenuItem>
+                                        <MenuItem value={'or'}>ИЛИ</MenuItem>
                             </Select>
                         </FormControl>
-                        <div style={{ marginTop: '100px', display: 'flex', justifyContent: 'flex-end', width: '90%'}}>
-                            <Button
-                                sx={{
-                                height: '34px',
-                                backgroundColor: "#33B6FF",
-                                color: 'white',
-                                width: '100px',
-                                }}
-                                variant="contained"
-                                onClick={getData}
-                            >
-                                {!loading && (
-                                    <span style={{ fontWeight: '600' }} className='buttonSearch'>Запрос</span>
-                                )}
-                                {loading && (
-                                    <span style={{ fontWeight: '600' }} className='buttonSearch'>Отмена</span>
-                                )}
-                            </Button>
-                        </div>
                     </>
                 )}
-                {option === 'bin' && (
+                {firstFilter == 'messNumber' && (
                     <>
-                        <TextField size='small' sx={{width: '90%', p: 0}} style={{ margin: '0 auto', marginBottom: '15px'}} InputLabelProps={{style: labelStyle}} id="outlined-basic" label="БИН" variant="outlined" />
-                        <TextField size='small' sx={{width: '90%', p: 0}} style={{ margin: '0 auto', marginBottom: '15px'}} InputLabelProps={{style: labelStyle}} id="outlined-basic" label="ID" variant="outlined" />
+                        <TextField value={value1} onChange={event => (set1(event.target.value))} size= "small" sx={{width: '90%', p: 0}} style={{ margin: '0 auto', marginBottom: '15px'}} InputLabelProps={{style: labelStyle}} id="outlined-basic" label="Внутренний для СФМ номер сообщения" variant="outlined" />
+                        <FormControl size= "small" sx={{ m: 1, width: '90%' }} style={{ margin: '0 auto', marginBottom: '15px'}}>
+                            <InputLabel id="demo-simple-select-label">И/ИЛИ</InputLabel>
+                                <Select
+                                    labelId="demo-simple-select-label"
+                                    id="demo-simple-select-label"
+                                    label = "И/ИЛИ"                                
+                                    value={aOr1}
+                                    onChange={event => {
+                                        setAOr1(event.target.value)
+                                    }}
+                                    MenuProps={MenuProps}
+                                    >
+                                        <MenuItem value={'none'}>...</MenuItem>
+                                        <MenuItem value={'and'}>И</MenuItem>
+                                        <MenuItem value={'or'}>ИЛИ</MenuItem>
+                            </Select>
+                        </FormControl>
                     </>
+                )}
+                {firstFilter == 'cfmName' && (
+                    <>
+                        <TextField value={value1} onChange={event => (set1(event.target.value))} size= "small" sx={{width: '90%', p: 0}} style={{ margin: '0 auto', marginBottom: '15px'}} InputLabelProps={{style: labelStyle}} id="outlined-basic" label="Код субъекта финансового мониторинга" variant="outlined" />
+                        <FormControl size= "small" sx={{ m: 1, width: '90%' }} style={{ margin: '0 auto', marginBottom: '15px'}}>
+                            <InputLabel id="demo-simple-select-label">И/ИЛИ</InputLabel>
+                                <Select
+                                    labelId="demo-simple-select-label"
+                                    id="demo-simple-select-label"
+                                    label = "И/ИЛИ"                                
+                                    value={aOr1}
+                                    onChange={event => {
+                                        setAOr1(event.target.value)
+                                    }}
+                                    MenuProps={MenuProps}
+                                    >
+                                        <MenuItem value={'none'}>...</MenuItem>
+                                        <MenuItem value={'and'}>И</MenuItem>
+                                        <MenuItem value={'or'}>ИЛИ</MenuItem>
+                            </Select>
+                        </FormControl>
+                    </>
+                )}
+                {firstFilter == 'operNumber' && (
+                    <>
+                        <TextField value={value1} onChange={event => (set1(event.target.value))} size= "small" sx={{width: '90%', p: 0}} style={{ margin: '0 auto', marginBottom: '15px'}} InputLabelProps={{style: labelStyle}} id="outlined-basic" label="Номер операции" variant="outlined" />
+                        <FormControl size= "small" sx={{ m: 1, width: '90%' }} style={{ margin: '0 auto', marginBottom: '15px'}}>
+                            <InputLabel id="demo-simple-select-label">И/ИЛИ</InputLabel>
+                                <Select
+                                    labelId="demo-simple-select-label"
+                                    id="demo-simple-select-label"
+                                    label = "И/ИЛИ"                                
+                                    value={aOr1}
+                                    onChange={event => {
+                                        setAOr1(event.target.value)
+                                    }}
+                                    MenuProps={MenuProps}
+                                    >
+                                        <MenuItem value={'none'}>...</MenuItem>
+                                        <MenuItem value={'and'}>И</MenuItem>
+                                        <MenuItem value={'or'}>ИЛИ</MenuItem>
+                            </Select>
+                        </FormControl>
+                    </>
+                )}
+                {firstFilter == 'memberMaincode' && (
+                    <>
+                        <TextField value={value1} onChange={event => (set1(event.target.value))} size= "small" sx={{width: '90%', p: 0}} style={{ margin: '0 auto', marginBottom: '15px'}} InputLabelProps={{style: labelStyle}} id="outlined-basic" label="ИИН/БИН Покупателя" variant="outlined" />
+                        <FormControl size= "small" sx={{ m: 1, width: '90%' }} style={{ margin: '0 auto', marginBottom: '15px'}}>
+                            <InputLabel id="demo-simple-select-label">И/ИЛИ</InputLabel>
+                                <Select
+                                    labelId="demo-simple-select-label"
+                                    id="demo-simple-select-label"
+                                    label = "И/ИЛИ"                                
+                                    value={aOr1}
+                                    onChange={event => {
+                                        setAOr1(event.target.value)
+                                    }}
+                                    MenuProps={MenuProps}
+                                    >
+                                        <MenuItem value={'none'}>...</MenuItem>
+                                        <MenuItem value={'and'}>И</MenuItem>
+                                        <MenuItem value={'or'}>ИЛИ</MenuItem>
+                            </Select>
+                        </FormControl>
+                    </>
+                )}
+
+                {aOr1 !== 'none' && (
+                    <FormControl size= "small" sx={{ m: 1, width: '90%' }} style={{ margin: '0 auto', marginBottom: '15px'}}>
+                        <InputLabel id="demo-simple-select-label">Фильтр</InputLabel>
+                        <Select
+                            labelId="demo-simple-select-label"
+                            id="demo-simple-select-label"
+                            label = "Фильтр"                                
+                            value={secondFilter}
+                            onChange={handleSecond}
+                            MenuProps={MenuProps}
+                            >
+                                <MenuItem value={'cfmMainCode'}>ИИН/БИН Субъекта</MenuItem>
+                                <MenuItem value={'messNumber'}>Внутренний для СФМ номер сообщения</MenuItem>
+                                <MenuItem value={'cfmName'}>Код субъекта финансового мониторинга</MenuItem>
+                                <MenuItem value={'operNumber'}>Номер операции</MenuItem>
+                                <MenuItem value={'memberMaincode'}>ИИН/БИН Покупателя</MenuItem>
+                        </Select>
+                    </FormControl>
+                )}
+
+                {/* SECOND VALUE ********************************************************* */}
+                {secondFilter == 'cfmMainCode' && (
+                    <>
+                        <TextField value={value2} onChange={event => (set2(event.target.value))} size= "small" sx={{width: '90%', p: 0}} style={{ margin: '0 auto', marginBottom: '15px'}} InputLabelProps={{style: labelStyle}} id="outlined-basic" label="ИИН/БИН Субъекта" variant="outlined" />
+                        <FormControl size= "small" sx={{ m: 1, width: '90%' }} style={{ margin: '0 auto', marginBottom: '15px'}}>
+                            <InputLabel id="demo-simple-select-label">И/ИЛИ</InputLabel>
+                                <Select
+                                    labelId="demo-simple-select-label"
+                                    id="demo-simple-select-label"
+                                    label = "И/ИЛИ"                                
+                                    value={aOr2}
+                                    onChange={event => {
+                                        setAOr2(event.target.value)
+                                    }}
+                                    MenuProps={MenuProps}
+                                    >
+                                        <MenuItem value={'none'}>...</MenuItem>
+                                        <MenuItem value={'and'}>И</MenuItem>
+                                        <MenuItem value={'or'}>ИЛИ</MenuItem>
+                            </Select>
+                        </FormControl>
+                    </>
+                )}
+                {secondFilter == 'messNumber' && (
+                    <>
+                        <TextField value={value2} onChange={event => (set2(event.target.value))} size= "small" sx={{width: '90%', p: 0}} style={{ margin: '0 auto', marginBottom: '15px'}} InputLabelProps={{style: labelStyle}} id="outlined-basic" label="Внутренний для СФМ номер сообщения" variant="outlined" />
+                        <FormControl size= "small" sx={{ m: 1, width: '90%' }} style={{ margin: '0 auto', marginBottom: '15px'}}>
+                            <InputLabel id="demo-simple-select-label">И/ИЛИ</InputLabel>
+                                <Select
+                                    labelId="demo-simple-select-label"
+                                    id="demo-simple-select-label"
+                                    label = "И/ИЛИ"                                
+                                    value={aOr2}
+                                    onChange={event => {
+                                        setAOr2(event.target.value)
+                                    }}
+                                    MenuProps={MenuProps}
+                                    >
+                                        <MenuItem value={'none'}>...</MenuItem>
+                                        <MenuItem value={'and'}>И</MenuItem>
+                                        <MenuItem value={'or'}>ИЛИ</MenuItem>
+                            </Select>
+                        </FormControl>
+                    </>
+                )}
+                {secondFilter == 'cfmName' && (
+                    <>
+                        <TextField value={value2} onChange={event => (set2(event.target.value))} size= "small" sx={{width: '90%', p: 0}} style={{ margin: '0 auto', marginBottom: '15px'}} InputLabelProps={{style: labelStyle}} id="outlined-basic" label="Код субъекта финансового мониторинга" variant="outlined" />
+                        <FormControl size= "small" sx={{ m: 1, width: '90%' }} style={{ margin: '0 auto', marginBottom: '15px'}}>
+                            <InputLabel id="demo-simple-select-label">И/ИЛИ</InputLabel>
+                                <Select
+                                    labelId="demo-simple-select-label"
+                                    id="demo-simple-select-label"
+                                    label = "И/ИЛИ"                                
+                                    value={aOr2}
+                                    onChange={event => {
+                                        setAOr2(event.target.value)
+                                    }}
+                                    MenuProps={MenuProps}
+                                    >
+                                        <MenuItem value={'none'}>...</MenuItem>
+                                        <MenuItem value={'and'}>И</MenuItem>
+                                        <MenuItem value={'or'}>ИЛИ</MenuItem>
+                            </Select>
+                        </FormControl>
+                    </>
+                )}
+                {secondFilter == 'operNumber' && (
+                    <>
+                        <TextField value={value2} onChange={event => (set2(event.target.value))} size= "small" sx={{width: '90%', p: 0}} style={{ margin: '0 auto', marginBottom: '15px'}} InputLabelProps={{style: labelStyle}} id="outlined-basic" label="Номер операции" variant="outlined" />
+                        <FormControl size= "small" sx={{ m: 1, width: '90%' }} style={{ margin: '0 auto', marginBottom: '15px'}}>
+                            <InputLabel id="demo-simple-select-label">И/ИЛИ</InputLabel>
+                                <Select
+                                    labelId="demo-simple-select-label"
+                                    id="demo-simple-select-label"
+                                    label = "И/ИЛИ"                                
+                                    value={aOr2}
+                                    onChange={event => {
+                                        setAOr2(event.target.value)
+                                    }}
+                                    MenuProps={MenuProps}
+                                    >
+                                        <MenuItem value={'none'}>...</MenuItem>
+                                        <MenuItem value={'and'}>И</MenuItem>
+                                        <MenuItem value={'or'}>ИЛИ</MenuItem>
+                            </Select>
+                        </FormControl>
+                    </>
+                )}
+                {secondFilter == 'memberMaincode' && (
+                    <>
+                        <TextField value={value2} onChange={event => (set2(event.target.value))} size= "small" sx={{width: '90%', p: 0}} style={{ margin: '0 auto', marginBottom: '15px'}} InputLabelProps={{style: labelStyle}} id="outlined-basic" label="ИИН/БИН Покупателя" variant="outlined" />
+                        <FormControl size= "small" sx={{ m: 1, width: '90%' }} style={{ margin: '0 auto', marginBottom: '15px'}}>
+                            <InputLabel id="demo-simple-select-label">И/ИЛИ</InputLabel>
+                                <Select
+                                    labelId="demo-simple-select-label"
+                                    id="demo-simple-select-label"
+                                    label = "И/ИЛИ"                                
+                                    value={aOr2}
+                                    onChange={event => {
+                                        setAOr2(event.target.value)
+                                    }}
+                                    MenuProps={MenuProps}
+                                    >
+                                        <MenuItem value={'none'}>...</MenuItem>
+                                        <MenuItem value={'and'}>И</MenuItem>
+                                        <MenuItem value={'or'}>ИЛИ</MenuItem>
+                            </Select>
+                        </FormControl>
+                    </>
+                )}
+                {aOr2 !== 'none' && (
+                    <FormControl size= "small" sx={{ m: 1, width: '90%' }} style={{ margin: '0 auto', marginBottom: '15px'}}>
+                        <InputLabel id="demo-simple-select-label">Фильтр</InputLabel>
+                        <Select
+                            labelId="demo-simple-select-label"
+                            id="demo-simple-select-label"
+                            label = "Фильтр"                                
+                            value={thirdFilter}
+                            onChange={handleThird}
+                            MenuProps={MenuProps}
+                            >
+                                <MenuItem value={'cfmMainCode'}>ИИН/БИН Субъекта</MenuItem>
+                                <MenuItem value={'messNumber'}>Внутренний для СФМ номер сообщения</MenuItem>
+                                <MenuItem value={'cfmName'}>Код субъекта финансового мониторинга</MenuItem>
+                                <MenuItem value={'operNumber'}>Номер операции</MenuItem>
+                                <MenuItem value={'memberMaincode'}>ИИН/БИН Покупателя</MenuItem>
+                        </Select>
+                    </FormControl>
+                )}
+
+                {/* THIRD VALUE ********************************************************* */}
+                {thirdFilter == 'cfmMainCode' && (
+                    <>
+                        <TextField value={value3} onChange={event => (set3(event.target.value))} size= "small" sx={{width: '90%', p: 0}} style={{ margin: '0 auto', marginBottom: '15px'}} InputLabelProps={{style: labelStyle}} id="outlined-basic" label="ИИН/БИН Субъекта" variant="outlined" />
+                        <FormControl size= "small" sx={{ m: 1, width: '90%' }} style={{ margin: '0 auto', marginBottom: '15px'}}>
+                            <InputLabel id="demo-simple-select-label">И/ИЛИ</InputLabel>
+                                <Select
+                                    labelId="demo-simple-select-label"
+                                    id="demo-simple-select-label"
+                                    label = "И/ИЛИ"                                
+                                    value={aOr3}
+                                    onChange={event => {
+                                        setAOr3(event.target.value)
+                                    }}
+                                    MenuProps={MenuProps}
+                                    >
+                                        <MenuItem value={'none'}>...</MenuItem>
+                                        <MenuItem value={'and'}>И</MenuItem>
+                                        <MenuItem value={'or'}>ИЛИ</MenuItem>
+                            </Select>
+                        </FormControl>
+                    </>
+                )}
+                {thirdFilter == 'messNumber' && (
+                    <>
+                        <TextField value={value3} onChange={event => (set3(event.target.value))} size= "small" sx={{width: '90%', p: 0}} style={{ margin: '0 auto', marginBottom: '15px'}} InputLabelProps={{style: labelStyle}} id="outlined-basic" label="Внутренний для СФМ номер сообщения" variant="outlined" />
+                        <FormControl size= "small" sx={{ m: 1, width: '90%' }} style={{ margin: '0 auto', marginBottom: '15px'}}>
+                            <InputLabel id="demo-simple-select-label">И/ИЛИ</InputLabel>
+                                <Select
+                                    labelId="demo-simple-select-label"
+                                    id="demo-simple-select-label"
+                                    label = "И/ИЛИ"                                
+                                    value={aOr3}
+                                    onChange={event => {
+                                        setAOr3(event.target.value)
+                                    }}
+                                    MenuProps={MenuProps}
+                                    >
+                                        <MenuItem value={'none'}>...</MenuItem>
+                                        <MenuItem value={'and'}>И</MenuItem>
+                                        <MenuItem value={'or'}>ИЛИ</MenuItem>
+                            </Select>
+                        </FormControl>
+                    </>
+                )}
+                {thirdFilter == 'cfmName' && (
+                    <>
+                        <TextField value={value3} onChange={event => (set3(event.target.value))} size= "small" sx={{width: '90%', p: 0}} style={{ margin: '0 auto', marginBottom: '15px'}} InputLabelProps={{style: labelStyle}} id="outlined-basic" label="Код субъекта финансового мониторинга" variant="outlined" />
+                        <FormControl size= "small" sx={{ m: 1, width: '90%' }} style={{ margin: '0 auto', marginBottom: '15px'}}>
+                            <InputLabel id="demo-simple-select-label">И/ИЛИ</InputLabel>
+                                <Select
+                                    labelId="demo-simple-select-label"
+                                    id="demo-simple-select-label"
+                                    label = "И/ИЛИ"                                
+                                    value={aOr3}
+                                    onChange={event => {
+                                        setAOr3(event.target.value)
+                                    }}
+                                    MenuProps={MenuProps}
+                                    >
+                                        <MenuItem value={'none'}>...</MenuItem>
+                                        <MenuItem value={'and'}>И</MenuItem>
+                                        <MenuItem value={'or'}>ИЛИ</MenuItem>
+                            </Select>
+                        </FormControl>
+                    </>
+                )}
+                {thirdFilter == 'operNumber' && (
+                    <>
+                        <TextField value={value3} onChange={event => (set3(event.target.value))} size= "small" sx={{width: '90%', p: 0}} style={{ margin: '0 auto', marginBottom: '15px'}} InputLabelProps={{style: labelStyle}} id="outlined-basic" label="Номер операции" variant="outlined" />
+                        <FormControl size= "small" sx={{ m: 1, width: '90%' }} style={{ margin: '0 auto', marginBottom: '15px'}}>
+                            <InputLabel id="demo-simple-select-label">И/ИЛИ</InputLabel>
+                                <Select
+                                    labelId="demo-simple-select-label"
+                                    id="demo-simple-select-label"
+                                    label = "И/ИЛИ"                                
+                                    value={aOr3}
+                                    onChange={event => {
+                                        setAOr3(event.target.value)
+                                    }}
+                                    MenuProps={MenuProps}
+                                    >
+                                        <MenuItem value={'none'}>...</MenuItem>
+                                        <MenuItem value={'and'}>И</MenuItem>
+                                        <MenuItem value={'or'}>ИЛИ</MenuItem>
+                            </Select>
+                        </FormControl>
+                    </>
+                )}
+                {thirdFilter == 'memberMaincode' && (
+                    <>
+                        <TextField value={value3} onChange={event => (set3(event.target.value))} size= "small" sx={{width: '90%', p: 0}} style={{ margin: '0 auto', marginBottom: '15px'}} InputLabelProps={{style: labelStyle}} id="outlined-basic" label="ИИН/БИН Покупателя" variant="outlined" />
+                        <FormControl size= "small" sx={{ m: 1, width: '90%' }} style={{ margin: '0 auto', marginBottom: '15px'}}>
+                            <InputLabel id="demo-simple-select-label">И/ИЛИ</InputLabel>
+                                <Select
+                                    labelId="demo-simple-select-label"
+                                    id="demo-simple-select-label"
+                                    label = "И/ИЛИ"                                
+                                    value={aOr3}
+                                    onChange={event => {
+                                        setAOr3(event.target.value)
+                                    }}
+                                    MenuProps={MenuProps}
+                                    >
+                                        <MenuItem value={'none'}>...</MenuItem>
+                                        <MenuItem value={'and'}>И</MenuItem>
+                                        <MenuItem value={'or'}>ИЛИ</MenuItem>
+                            </Select>
+                        </FormControl>
+                    </>
+                )}
+                {aOr3 !== 'none' && (
+                    <FormControl size= "small" sx={{ m: 1, width: '90%' }} style={{ margin: '0 auto', marginBottom: '15px'}}>
+                        <InputLabel id="demo-simple-select-label">Фильтр</InputLabel>
+                        <Select
+                            labelId="demo-simple-select-label"
+                            id="demo-simple-select-label"
+                            label = "Фильтр"                                
+                            value={fourthFilter}
+                            onChange={handleFourth}
+                            MenuProps={MenuProps}
+                            >
+                                <MenuItem value={'cfmMainCode'}>ИИН/БИН Субъекта</MenuItem>
+                                <MenuItem value={'messNumber'}>Внутренний для СФМ номер сообщения</MenuItem>
+                                <MenuItem value={'cfmName'}>Код субъекта финансового мониторинга</MenuItem>
+                                <MenuItem value={'operNumber'}>Номер операции</MenuItem>
+                                <MenuItem value={'memberMaincode'}>ИИН/БИН Покупателя</MenuItem>
+                        </Select>
+                    </FormControl>
+                )}
+
+                {/* FOURTH VALUE ********************************************************* */}
+                {fourthFilter == 'cfmMainCode' && (
+                    <>
+                        <TextField value={value4} onChange={event => (set4(event.target.value))} size= "small" sx={{width: '90%', p: 0}} style={{ margin: '0 auto', marginBottom: '15px'}} InputLabelProps={{style: labelStyle}} id="outlined-basic" label="ИИН/БИН Субъекта" variant="outlined" />
+                        <FormControl size= "small" sx={{ m: 1, width: '90%' }} style={{ margin: '0 auto', marginBottom: '15px'}}>
+                            <InputLabel id="demo-simple-select-label">И/ИЛИ</InputLabel>
+                                <Select
+                                    labelId="demo-simple-select-label"
+                                    id="demo-simple-select-label"
+                                    label = "И/ИЛИ"                                
+                                    value={aOr4}
+                                    onChange={event => {
+                                        setAOr4(event.target.value)
+                                    }}
+                                    MenuProps={MenuProps}
+                                    >
+                                        <MenuItem value={'none'}>...</MenuItem>
+                                        <MenuItem value={'and'}>И</MenuItem>
+                                        <MenuItem value={'or'}>ИЛИ</MenuItem>
+                            </Select>
+                        </FormControl>
+                    </>
+                )}
+                {fourthFilter == 'messNumber' && (
+                    <>
+                        <TextField value={value4} onChange={event => (set4(event.target.value))} size= "small" sx={{width: '90%', p: 0}} style={{ margin: '0 auto', marginBottom: '15px'}} InputLabelProps={{style: labelStyle}} id="outlined-basic" label="Внутренний для СФМ номер сообщения" variant="outlined" />
+                        <FormControl size= "small" sx={{ m: 1, width: '90%' }} style={{ margin: '0 auto', marginBottom: '15px'}}>
+                            <InputLabel id="demo-simple-select-label">И/ИЛИ</InputLabel>
+                                <Select
+                                    labelId="demo-simple-select-label"
+                                    id="demo-simple-select-label"
+                                    label = "И/ИЛИ"                                
+                                    value={aOr4}
+                                    onChange={event => {
+                                        setAOr4(event.target.value)
+                                    }}
+                                    MenuProps={MenuProps}
+                                    >
+                                        <MenuItem value={'none'}>...</MenuItem>
+                                        <MenuItem value={'and'}>И</MenuItem>
+                                        <MenuItem value={'or'}>ИЛИ</MenuItem>
+                            </Select>
+                        </FormControl>
+                    </>
+                )}
+                {fourthFilter == 'cfmName' && (
+                    <>
+                        <TextField value={value4} onChange={event => (set4(event.target.value))} size= "small" sx={{width: '90%', p: 0}} style={{ margin: '0 auto', marginBottom: '15px'}} InputLabelProps={{style: labelStyle}} id="outlined-basic" label="Код субъекта финансового мониторинга" variant="outlined" />
+                        <FormControl size= "small" sx={{ m: 1, width: '90%' }} style={{ margin: '0 auto', marginBottom: '15px'}}>
+                            <InputLabel id="demo-simple-select-label">И/ИЛИ</InputLabel>
+                                <Select
+                                    labelId="demo-simple-select-label"
+                                    id="demo-simple-select-label"
+                                    label = "И/ИЛИ"                                
+                                    value={aOr4}
+                                    onChange={event => {
+                                        setAOr4(event.target.value)
+                                    }}
+                                    MenuProps={MenuProps}
+                                    >
+                                        <MenuItem value={'none'}>...</MenuItem>
+                                        <MenuItem value={'and'}>И</MenuItem>
+                                        <MenuItem value={'or'}>ИЛИ</MenuItem>
+                            </Select>
+                        </FormControl>
+                    </>
+                )}
+                {fourthFilter == 'operNumber' && (
+                    <>
+                        <TextField value={value4} onChange={event => (set4(event.target.value))} size= "small" sx={{width: '90%', p: 0}} style={{ margin: '0 auto', marginBottom: '15px'}} InputLabelProps={{style: labelStyle}} id="outlined-basic" label="Номер операции" variant="outlined" />
+                        <FormControl size= "small" sx={{ m: 1, width: '90%' }} style={{ margin: '0 auto', marginBottom: '15px'}}>
+                            <InputLabel id="demo-simple-select-label">И/ИЛИ</InputLabel>
+                                <Select
+                                    labelId="demo-simple-select-label"
+                                    id="demo-simple-select-label"
+                                    label = "И/ИЛИ"                                
+                                    value={aOr4}
+                                    onChange={event => {
+                                        setAOr4(event.target.value)
+                                    }}
+                                    MenuProps={MenuProps}
+                                    >
+                                        <MenuItem value={'none'}>...</MenuItem>
+                                        <MenuItem value={'and'}>И</MenuItem>
+                                        <MenuItem value={'or'}>ИЛИ</MenuItem>
+                            </Select>
+                        </FormControl>
+                    </>
+                )}
+                {fourthFilter == 'memberMaincode' && (
+                    <>
+                        <TextField value={value4} onChange={event => (set4(event.target.value))} size= "small" sx={{width: '90%', p: 0}} style={{ margin: '0 auto', marginBottom: '15px'}} InputLabelProps={{style: labelStyle}} id="outlined-basic" label="ИИН/БИН Покупателя" variant="outlined" />
+                        <FormControl size= "small" sx={{ m: 1, width: '90%' }} style={{ margin: '0 auto', marginBottom: '15px'}}>
+                            <InputLabel id="demo-simple-select-label">И/ИЛИ</InputLabel>
+                                <Select
+                                    labelId="demo-simple-select-label"
+                                    id="demo-simple-select-label"
+                                    label = "И/ИЛИ"                                
+                                    value={aOr4}
+                                    onChange={event => {
+                                        setAOr4(event.target.value)
+                                    }}
+                                    MenuProps={MenuProps}
+                                    >
+                                        <MenuItem value={'none'}>...</MenuItem>
+                                        <MenuItem value={'and'}>И</MenuItem>
+                                        <MenuItem value={'or'}>ИЛИ</MenuItem>
+                            </Select>
+                        </FormControl>
+                    </>
+                )}
+                {aOr4 !== 'none' && (
+                    <FormControl size= "small" sx={{ m: 1, width: '90%' }} style={{ margin: '0 auto', marginBottom: '15px'}}>
+                        <InputLabel id="demo-simple-select-label">Фильтр</InputLabel>
+                        <Select
+                            labelId="demo-simple-select-label"
+                            id="demo-simple-select-label"
+                            label = "Фильтр"                                
+                            value={fifthFilter}
+                            onChange={handleFifth}
+                            MenuProps={MenuProps}
+                            >
+                                <MenuItem value={'cfmMainCode'}>ИИН/БИН Субъекта</MenuItem>
+                                <MenuItem value={'messNumber'}>Внутренний для СФМ номер сообщения</MenuItem>
+                                <MenuItem value={'cfmName'}>Код субъекта финансового мониторинга</MenuItem>
+                                <MenuItem value={'operNumber'}>Номер операции</MenuItem>
+                                <MenuItem value={'memberMaincode'}>ИИН/БИН Покупателя</MenuItem>
+                        </Select>
+                    </FormControl>
+                )}
+
+                {/* FIFTH VALUE ********************************************************* */}
+                {fifthFilter == 'cfmMainCode' && (
+                    <>
+                        <TextField value={value5} onChange={event => (set5(event.target.value))} size= "small" sx={{width: '90%', p: 0}} style={{ margin: '0 auto', marginBottom: '15px'}} InputLabelProps={{style: labelStyle}} id="outlined-basic" label="ИИН/БИН Субъекта" variant="outlined" />
+                    </>
+                )}
+                {fifthFilter == 'messNumber' && (
+                    <>
+                        <TextField value={value5} onChange={event => (set5(event.target.value))} size= "small" sx={{width: '90%', p: 0}} style={{ margin: '0 auto', marginBottom: '15px'}} InputLabelProps={{style: labelStyle}} id="outlined-basic" label="Внутренний для СФМ номер сообщения" variant="outlined" />
+                    </>
+                )}
+                {fifthFilter == 'cfmName' && (
+                    <>
+                        <TextField value={value5} onChange={event => (set5(event.target.value))} size= "small" sx={{width: '90%', p: 0}} style={{ margin: '0 auto', marginBottom: '15px'}} InputLabelProps={{style: labelStyle}} id="outlined-basic" label="Код субъекта финансового мониторинга" variant="outlined" />
+                    </>
+                )}
+                {fifthFilter == 'operNumber' && (
+                    <>
+                        <TextField value={value5} onChange={event => (set5(event.target.value))} size= "small" sx={{width: '90%', p: 0}} style={{ margin: '0 auto', marginBottom: '15px'}} InputLabelProps={{style: labelStyle}} id="outlined-basic" label="Номер операции" variant="outlined" />
+                    </>
+                )}
+                {fifthFilter == 'memberMaincode' && (
+                    <>
+                        <TextField value={value5} onChange={event => (set5(event.target.value))} size= "small" sx={{width: '90%', p: 0}} style={{ margin: '0 auto', marginBottom: '15px'}} InputLabelProps={{style: labelStyle}} id="outlined-basic" label="ИИН/БИН Покупателя" variant="outlined" />
+                    </>
+                )}
+
+                {firstFilter.length > 0 && (
+
+                    <div style={{ marginTop: '50px', display: 'flex', justifyContent: 'flex-end', width: '90%'}}>
+                        <Button
+                            sx={{
+                                height: '34px',
+                            backgroundColor: "#33B6FF",
+                            color: 'white',
+                            width: '100px',
+                        }}
+                        variant="contained"
+                        onClick={getData}
+                        >
+                            {!loading && (
+                                <span style={{ fontWeight: '600' }} className='buttonSearch'>Запрос</span>
+                            )}
+                            {loading && (
+                                <span style={{ fontWeight: '600' }} className='buttonSearch'>Отмена</span>
+                            )}
+                        </Button>
+                    </div>
                 )}
             </div>
             <div className="tableBlock">
@@ -313,7 +883,7 @@ function OracleTable(props) {
                         </Box>
                     )}
                     {!loading && (
-                        <ResultTable/>
+                        <ResultTable list={mainList}/>
                     )}
                 </div>
                 {!loading && (
@@ -330,32 +900,97 @@ function OracleTable(props) {
 
 
 function ResultTable(props) {
-    
+    const {list} = props
     return (
         <TableContainer component={Paper}>
-            <Table sx={{ minWidth: 650 }} size="small" aria-label="a dense table">
+            <Table sx={{ minWidth: 650, whiteSpace: 'nowrap' }} size="small" aria-label="a dense table">
             <TableHead>
                 <TableRow>
                 {Object.values(dictionaryOfTable).map((column) => (
-                    <TableCell sx={{ whiteSpace: 'nowrap' }} key={column}>{column}</TableCell>
+                    <TableCell sx={{ whiteSpace: 'nowrap' }}  key={column}>{column}</TableCell>
                     ))}
                 </TableRow>
             </TableHead>
             <TableBody>
-                {/* {rows.map((row) => (
+                {list.map((row, index) => (
                     <TableRow
                     key={row.name}
                     sx={{ '&:last-child td, &:last-child th': { border: 0 } }}
                     >
-                    <TableCell component="th" scope="row">
-                    {row.name}
-                    </TableCell>
-                    <TableCell align="right">{row.calories}</TableCell>
-                    <TableCell align="right">{row.fat}</TableCell>
-                    <TableCell align="right">{row.carbs}</TableCell>
-                    <TableCell align="right">{row.protein}</TableCell>
+                    <TableCell component="th" scope="row">{row.messOfmId}</TableCell>
+                    <TableCell align="right">{row.messNumber}</TableCell>
+                    <TableCell align="right">{row.messDate}</TableCell>
+                    <TableCell align="right">{row.messType}</TableCell>
+                    <TableCell align="right">{row.operStatus}</TableCell>
+                    <TableCell align="right">{row.messReason}</TableCell>
+                    <TableCell align="right">{row.cfmCode}</TableCell>
+                    <TableCell align="right">{row.cfmName}</TableCell>
+                    <TableCell align="right">{row.cfmMainCode}</TableCell>
+                    <TableCell align="right">{row.cfmSeatArea}</TableCell>
+                    <TableCell align="right">{row.cfmSeatRegion}</TableCell>
+                    <TableCell align="right">{row.cfmSeatCity}</TableCell>
+                    <TableCell align="right">{row.cfmSeatStreet}</TableCell>
+                    <TableCell align="right">{row.cfmSeatHouse}</TableCell>
+                    <TableCell align="right">{row.cfmSeatOffice}</TableCell>
+                    <TableCell align="right">{row.cfmSeatPostcode}</TableCell>
+                    <TableCell align="right">{row.cfmIsac}</TableCell>
+                    <TableCell align="right">{row.docType}</TableCell>
+                    <TableCell align="right">{row.cfmDocNumber}</TableCell>
+                    <TableCell align="right">{row.cfmDocSeries}</TableCell>
+                    <TableCell align="right">{row.cfmDocWhom}</TableCell>
+                    <TableCell align="right">{row.cfmDocDate}</TableCell>
+                    <TableCell align="right">{row.operNumber}</TableCell>
+                    <TableCell align="right">{row.operType}</TableCell>
+                    <TableCell align="right">{row.operPaymentPurpose}</TableCell>
+                    <TableCell align="right">{row.operMembersCount}</TableCell>
+                    <TableCell align="right">{row.currencyType}</TableCell>
+                    <TableCell align="right">{row.operTengeAmount}</TableCell>
+                    <TableCell align="right">{row.operReason}</TableCell>
+                    <TableCell align="right">{row.operDocDate}</TableCell>
+                    <TableCell align="right">{row.operDocNumber}</TableCell>
+                    <TableCell align="right">{row.suspFirst}</TableCell>
+                    <TableCell align="right">{row.suspSecond}</TableCell>
+                    <TableCell align="right">{row.suspThird}</TableCell>
+                    <TableCell align="right">{row.operDopInfo}</TableCell>
+                    <TableCell align="right">{row.memberId}</TableCell>
+                    <TableCell align="right">{row.memberVid}</TableCell>
+                    <TableCell align="right">{row.memberResidence}</TableCell>
+                    <TableCell align="right">{row.memberResidenceCountrycode}</TableCell>
+                    <TableCell align="right">{row.memberType}</TableCell>
+                    <TableCell align="right">{row.memberForeign}</TableCell>
+                    <TableCell align="right">{row.memberBankCode}</TableCell>
+                    <TableCell align="right">{row.memberBankName}</TableCell>
+                    <TableCell align="right">{row.memberBankAccount}</TableCell>
+                    <TableCell align="right">{row.memberBankAddress}</TableCell>
+                    <TableCell align="right">{row.memberUrName}</TableCell>
+                    <TableCell align="right">{row.memberUrFistHeadName}</TableCell>
+                    <TableCell align="right">{row.memberOked}</TableCell>
+                    <TableCell align="right">{row.memberMaincode}</TableCell>
+                    <TableCell align="right">{row.memberAcFirstName}</TableCell>
+                    <TableCell align="right">{row.memberAcSecondName}</TableCell>
+                    <TableCell align="right">{row.memberAcMiddlename}</TableCell>
+                    <TableCell align="right">{row.memberAcDocType}</TableCell>
+                    <TableCell align="right">{row.memberAcDocSeries}</TableCell>
+                    <TableCell align="right">{row.memberAcDocWhom}</TableCell>
+                    <TableCell align="right">{row.memberAcDocDate}</TableCell>
+                    <TableCell align="right">{row.memberAcBirthDate}</TableCell>
+                    <TableCell align="right">{row.memberAcBirthPlace}</TableCell>
+                    <TableCell align="right">{row.memberRegArea}</TableCell>
+                    <TableCell align="right">{row.memberRegRegion}</TableCell>
+                    <TableCell align="right">{row.memberRegSity}</TableCell>
+                    <TableCell align="right">{row.memberRegStreet}</TableCell>
+                    <TableCell align="right">{row.memberRegHouse}</TableCell>
+                    <TableCell align="right">{row.memberRegOffice}</TableCell>
+                    <TableCell align="right">{row.memberPhone}</TableCell>
+                    <TableCell align="right">{row.memberEmail}</TableCell>
+                    <TableCell align="right">{row.memberSeatArea}</TableCell>
+                    <TableCell align="right">{row.memberSeatRegion}</TableCell>
+                    <TableCell align="right">{row.memberSeatSity}</TableCell>
+                    <TableCell align="right">{row.memberSeatStreet}</TableCell>
+                    <TableCell align="right">{row.memberSeatHouse}</TableCell>
+                    <TableCell align="right">{row.memberSeatOffice}</TableCell>
                 </TableRow>
-                ))} */}
+                ))}
             </TableBody>
             </Table>
         </TableContainer>
