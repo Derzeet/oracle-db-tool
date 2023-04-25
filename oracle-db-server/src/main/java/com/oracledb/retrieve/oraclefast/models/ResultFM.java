@@ -46,7 +46,6 @@ public class ResultFM {
     @Column(name = "CFM_NAME")
     private String cfmName;
 
-    @Nullable
     @Column(name = "CFM_MAINCODE")
     private String cfmMainCode;
 

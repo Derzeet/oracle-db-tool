@@ -6,6 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.jdbc.core.BeanPropertyRowMapper;
 import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.jdbc.core.ResultSetExtractor;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
@@ -20,7 +21,7 @@ public class ResultFMService {
     @Autowired
     private ResultFMRepository resultFMRepository;
 
-    public List<ResultFM> findByMessOfmId(BigDecimal id) {
+    public List<ResultFM> findByMessOfmId() {
         List<ResultFM> l = resultFMRepository.findAllByCfmMainCode("940140000385");
         return l;
     }
@@ -94,4 +95,5 @@ public class ResultFMService {
         System.out.println(sql + "string to from method");
         return sql;
     }
+
 }
