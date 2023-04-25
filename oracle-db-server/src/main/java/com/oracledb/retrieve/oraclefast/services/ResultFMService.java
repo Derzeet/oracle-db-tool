@@ -3,6 +3,9 @@ package com.oracledb.retrieve.oraclefast.services;
 import com.oracledb.retrieve.oraclefast.models.ResultFM;
 import com.oracledb.retrieve.oraclefast.repositories.ResultFMRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Bean;
+import org.springframework.jdbc.core.BeanPropertyRowMapper;
+import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
@@ -13,6 +16,8 @@ import java.util.List;
 @Service
 public class ResultFMService {
     @Autowired
+    private JdbcTemplate jdbcTemplate;
+    @Autowired
     private ResultFMRepository resultFMRepository;
 
     public List<ResultFM> findByMessOfmId(BigDecimal id) {
@@ -20,143 +25,73 @@ public class ResultFMService {
         return l;
     }
 
-    public List<ResultFM> getResults(HashMap<String, String> req) {
-        if (req.get("filter1").equals("cfmMainCode")) {
-            if (req.get("aOr1").equals("none")) {
-                return resultFMRepository.findAllByCfmMainCode(req.get("value1"));
-            } else if (req.get("aOr1").equals("and")) {
-                if (req.get("filter2").equals("messNumber")) {
-                    //CFMMAINCODE AND MESSNUMBER
-                } else if (req.get("filter2").equals("cfmName")) {
-                    //CFMMAINCODE AND cfmName
-                } else if (req.get("filter2").equals("operNumber")) {
-                    //CFMMAINCODE and opernumber
-                } else if (req.get("filter2").equals("memberMaincode")) {
-                    //CFMMAINCODE and membermaincode
-                }
+    private List<ResultFM> getList(String sql) {
+        List<ResultFM> resultFMS = jdbcTemplate.query(sql, new BeanPropertyRowMapper<>(ResultFM.class));
+        return resultFMS;
+    }
+
+    public String getSql(String sql, Integer i, HashMap<String, String> req) {
+        HashMap<String, String> dict = new HashMap<>();
+        dict.put("cfmMainCode", "CFM_MAINCODE");
+        dict.put("messNumber", "MESS_NUMBER");
+        dict.put("cfmName", "CFM_NAME");
+        dict.put("operNumber", "OPER_NUMBER");
+        dict.put("memberMaincode", "MEMBER_MAINCODE");
+        String aOr = "aOr" + i;
+        int number = i + 1;
+
+        if (req.get(aOr).equals("none") || req.get("value" + number).equals("")) {
+            System.out.println(" req.get(aOr).equals(\"none\") || req.get(\"value\" + number).equals(\"\")");
+            System.out.println(sql + " returned");
+            return sql;
+        } else if (req.get(aOr).equals("and") && !req.get("value" + number).equals("")) {
+            if (req.get("filter" + number).equals("messNumber")) {
+                sql = sql + " AND " + dict.get(req.get("filter" + number)) + " = " + req.get("value" + number);
             } else {
-                if (req.get("filter2").equals("cfmMainCode")) {
-                    //CFMMAINCODE OR CFMMAINCODE
-                } else if (req.get("filter2").equals("messNumber")) {
-                    //CFMMAINCODE or MESSNUMBER
-                } else if (req.get("filter2").equals("cfmName")) {
-                    //CFMMAINCODE or cfmName
-                } else if (req.get("filter2").equals("operNumber")) {
-                    //CFMMAINCODE or opernumber
-                } else if (req.get("filter2").equals("memberMaincode")) {
-                    //CFMMAINCODE or memberMaincode
-                }
+                sql = sql + " AND " + dict.get(req.get("filter" + number)) + " = '" + req.get("value" + number) + "'";
             }
-        } else if (req.get("filter1").equals("messNumber")) {
-            if (req.get("aOr1").equals("none")) {
-                //nessNumberOnly
-                BigDecimal messNumber = new BigDecimal(req.get("value1"));
-                return resultFMRepository.findAllByMessNumber(messNumber);
-            } else if (req.get("aOr1").equals("and")) {
-                if (req.get("filter2").equals("cfmMainCode")) {
-                    //CFMMAINCODE AND MESSNUMBER
-                } else if (req.get("filter2").equals("cfmName")) {
-                    //MESSNUMBER AND cfmName
-                } else if (req.get("filter2").equals("operNumber")) {
-                    //MESSNUMBER AND opernumber
-                } else if (req.get("filter2").equals("memberMaincode")) {
-                    //MESSNUMBER AND membermaincode
-                }
-            } else {
-                if (req.get("filter2").equals("cfmMainCode")) {
-                    //CFMMAINCODE or MESSNUMBER
-                } else if (req.get("filter2").equals("messNumber")) {
-                    //MESSNUMBER or MESSNUMBER
-                } else if (req.get("filter2").equals("cfmName")) {
-                    //MESSNUMBER or cfmName
-                } else if (req.get("filter2").equals("operNumber")) {
-                    //MESSNUMBER or opernumber
-                } else if (req.get("filter2").equals("memberMaincode")) {
-                    //MESSNUMBER or memberMaincode
-                }
+            System.out.println(sql);
+            if (i < 4) {
+                System.out.println(i);
+                sql = getSql(sql, number, req);
             }
-        } else if (req.get("filter1").equals("cfmName")) {
-            if (req.get("aOr1").equals("none")) {
-                //cfmNameOnly
-                return resultFMRepository.findAllByCfmName(req.get("value1"));
-            } else if (req.get("aOr1").equals("and")) {
-                if (req.get("filter2").equals("cfmMainCode")) {
-                    //CFMMAINCODE AND cfmName
-                } else if (req.get("filter2").equals("messNumber")) {
-                    //MESSNUMBER AND cfmName
-                } else if (req.get("filter2").equals("operNumber")) {
-                    //cfmName AND opernumber
-                } else if (req.get("filter2").equals("memberMaincode")) {
-                    //cfmName AND membermaincode
-                }
+        } else {
+            if (req.get("filter" + number).equals("messNumber")) {
+                sql = sql + " OR " + dict.get(req.get("filter" + number)) + " = " + req.get("value" + number);
             } else {
-                if (req.get("filter2").equals("cfmMainCode")) {
-                    //CFMMAINCODE or cfmName
-                } else if (req.get("filter2").equals("messNumber")) {
-                    //MESSNUMBER or cfmName
-                } else if (req.get("filter2").equals("cfmName")) {
-                    //cfmName or cfmName
-                } else if (req.get("filter2").equals("operNumber")) {
-                    //cfmName or opernumber
-                } else if (req.get("filter2").equals("memberMaincode")) {
-                    //cfmName or memberMaincode
-                }
+                sql = sql + " OR " + dict.get(req.get("filter" + number)) + " = '" + req.get("value" + number) + "'";
             }
-        } else if (req.get("filter1").equals("operNumber")) {
-            if (req.get("aOr1").equals("none")) {
-                //OperNumberOnly
-                return resultFMRepository.findAllByOperNumber(req.get("value1"));
-            } else if (req.get("aOr1").equals("and")) {
-                if (req.get("filter2").equals("cfmMainCode")) {
-                    //CFMMAINCODE AND opernumber
-                } else if (req.get("filter2").equals("messNumber")) {
-                    //MESSNUMBER AND opernumber
-                } else if (req.get("filter2").equals("cfmName")) {
-                    //cfmName AND opernumber
-                } else if (req.get("filter2").equals("memberMaincode")) {
-                    //opernumber AND membermaincode
-                }
-            } else {
-                if (req.get("filter2").equals("cfmMainCode")) {
-                    //CFMMAINCODE or opernumber
-                } else if (req.get("filter2").equals("messNumber")) {
-                    //MESSNUMBER or opernumber
-                } else if (req.get("filter2").equals("cfmName")) {
-                    //cfmName or opernumber
-                } else if (req.get("filter2").equals("operNumber")) {
-                    //opernumber or opernumber
-                } else if (req.get("filter2").equals("memberMaincode")) {
-                    //opernumber or memberMaincode
-                }
-            }
-        } else if (req.get("filter1").equals("memberMaincode")) {
-            if (req.get("aOr1").equals("none")) {
-                //memberMaincodeOnly
-                return resultFMRepository.findAllByMemberMaincode(req.get("value1"));
-            } else if (req.get("aOr1").equals("and")) {
-                if (req.get("filter2").equals("cfmMainCode")) {
-                    //CFMMAINCODE AND memberMaincode
-                } else if (req.get("filter2").equals("messNumber")) {
-                    //MESSNUMBER AND memberMaincode
-                } else if (req.get("filter2").equals("cfmName")) {
-                    //cfmName AND memberMaincode
-                } else if (req.get("filter2").equals("operNumber")) {
-                    //opernumber AND membermaincode
-                }
-            } else {
-                if (req.get("filter2").equals("cfmMainCode")) {
-                    //CFMMAINCODE or memberMaincode
-                } else if (req.get("filter2").equals("messNumber")) {
-                    //MESSNUMBER or memberMaincode
-                } else if (req.get("filter2").equals("cfmName")) {
-                    //cfmName or memberMaincode
-                } else if (req.get("filter2").equals("operNumber")) {
-                    //opernumber or memberMaincode
-                } else if (req.get("filter2").equals("memberMaincode")) {
-                    //memberMaincode or memberMaincode
-                }
+            if (i < 4) {
+                System.out.println(i);
+                sql = getSql(sql, number, req);
             }
         }
-        return new ArrayList<>();
+        return sql;
+    }
+
+    public String getResults(HashMap<String, String> req) {
+        System.out.println(req);
+        HashMap<String, String> dict = new HashMap<>();
+        dict.put("cfmMainCode", "CFM_MAINCODE");
+        dict.put("messNumber", "MESS_NUMBER");
+        dict.put("cfmName", "CFM_NAME");
+        dict.put("operNumber", "OPER_NUMBER");
+        dict.put("memberMaincode", "MEMBER_MAINCODE");
+        String sql = "SELECT * FROM KFM.RESULT_FM WHERE ";
+        if (req.get("value1").equals("")) {
+            System.out.println("value1 is not empty");
+            return null;
+        } else {
+            if (req.get("filter1").equals("messNumber")) {
+                sql = sql + dict.get(req.get("filter1")) + " = " + req.get("value1") + "";
+            } else {
+                sql = sql + dict.get(req.get("filter1")) + " = '" + req.get("value1") + "'";
+            }
+            System.out.println(sql + " recursive method called");
+            sql = getSql(sql, 1, req);
+        }
+//        List<ResultFM> r = jdbcTemplate.query(sql, new BeanPropertyRowMapper<>(ResultFM.class));
+        System.out.println(sql + "string to from method");
+        return sql;
     }
 }
