@@ -10,6 +10,8 @@ import org.springframework.jdbc.core.ResultSetExtractor;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
+import java.sql.Date;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -78,7 +80,12 @@ public class ResultFMService {
         dict.put("cfmName", "CFM_NAME");
         dict.put("operNumber", "OPER_NUMBER");
         dict.put("memberMaincode", "MEMBER_MAINCODE");
-        String sql = "SELECT * FROM KFM.RESULT_FM WHERE ";
+        String sql = "";
+        if (req.get("startDate")!=null) {
+            sql =  "SELECT * FROM KFM.RESULT_FM WHERE MESS_DATE BETWEEN TO_DATE('" + req.get("startDate") + "', 'YYYY-MM-DD') AND TO_DATE('" + req.get("endDate")  + "', 'YYYY-MM-DD') AND ";
+        } else {
+            sql =  "SELECT * FROM KFM.RESULT_FM WHERE ";
+        }
         if (req.get("value1").equals("")) {
             System.out.println("value1 is not empty");
             return null;

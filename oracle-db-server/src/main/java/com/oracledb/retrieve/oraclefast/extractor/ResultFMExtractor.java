@@ -57,6 +57,7 @@ public class ResultFMExtractor implements ResultSetExtractor<List<ResultFM>> {
             res.setMemberResidenceCountrycode(rs.getBigDecimal("MEMBER_RESIDENCE_COUNTRYCODE"));
             res.setMemberType(rs.getString("MEMBER_TYPE"));
             res.setMemberForeign(rs.getString("MEMBER_FOREIGN"));
+            res.setMemberBankCode(rs.getString("MEMBER_BANK_CODE"));
             res.setMemberBankName(rs.getString("MEMBER_BANK_NAME"));
             res.setMemberBankAccount(rs.getString("MEMBER_BANK_ACCOUNT"));
             res.setMemberBankAddress(rs.getString("MEMBER_BANK_ADDRESS"));

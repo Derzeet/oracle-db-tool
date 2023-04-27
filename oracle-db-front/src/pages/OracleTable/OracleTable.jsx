@@ -4,30 +4,37 @@ import axios from 'axios';
 
 
 import exportFromJSON from "export-from-json";
-import IconButton from '@mui/material/IconButton';
 import FileDownloadIcon from '@mui/icons-material/FileDownload';
 
+import TableFooter from '@mui/material/TableFooter';
+import TablePagination from '@mui/material/TablePagination';
+import Paper from '@mui/material/Paper';
+import IconButton from '@mui/material/IconButton';
+import FirstPageIcon from '@mui/icons-material/FirstPage';
+import KeyboardArrowLeft from '@mui/icons-material/KeyboardArrowLeft';
+import KeyboardArrowRight from '@mui/icons-material/KeyboardArrowRight';
+import LastPageIcon from '@mui/icons-material/LastPage';
 import './oracleTable.scss'
 import LinearProgress from '@mui/material/LinearProgress';
 import { useTheme } from '@mui/material/styles';
 import Box from '@mui/material/Box';
-import Alert from '@mui/material/Alert';
 import Button from '@mui/material/Button';
 import TextField from '@mui/material/TextField';
+import {DateField} from '@mui/x-date-pickers/DateField';
+import { LocalizationProvider } from "@mui/x-date-pickers";
+import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 import Table from '@mui/material/Table';
 import TableBody from '@mui/material/TableBody';
 import TableCell from '@mui/material/TableCell';
 import TableContainer from '@mui/material/TableContainer';
 import TableHead from '@mui/material/TableHead';
 import TableRow from '@mui/material/TableRow';
-import Paper from '@mui/material/Paper';
 import InputLabel from '@mui/material/InputLabel';
 import MenuItem from '@mui/material/MenuItem';
-import FormHelperText from '@mui/material/FormHelperText';
 import FormControl from '@mui/material/FormControl';
 import Select from '@mui/material/Select';
-import Chip from '@mui/material/Chip';
-import OutlinedInput from '@mui/material/OutlinedInput';
+import dayjs from "dayjs";
+import moment from "moment/moment";
 
 const baseURL = "http://192.168.30.24:9091/api/finpol/main"
 
@@ -144,7 +151,27 @@ function OracleTable(props) {
     const labelStyle = {
         fontSize: '14px', /* set the desired font size */
     };
+    const [page, setPage] = React.useState(0);
+    const [rowsPerPage, setRowsPerPage] = React.useState(5);
+    const [count, setCount] = React.useState(0)
+  
+    // Avoid a layout jump when reaching the last page with empty rows.
+    const emptyRows =
+      page > 0 ? Math.max(0, (1 + page) * rowsPerPage - 15) : 0;
+  
+    const handleChangePage = (event, newPage) => {
+        console.log(newPage)
+        getData()
+        setPage(newPage);
+    };
+  
+    const handleChangeRowsPerPage = (event) => {
+      setRowsPerPage(parseInt(event.target.value, 10));
+      setPage(0);
+    };
 
+    const [startDate, setStartDate] = React.useState('')
+    const [endDate, setEndDate] = React.useState('')
     const [mainList, setMainList] = React.useState([])
     const [firstFilter, setFirst] = React.useState('')
     const [secondFilter, setSecond] = React.useState('')
@@ -161,6 +188,7 @@ function OracleTable(props) {
     const [value4, set4] = React.useState('')
     const [value5, set5] = React.useState('')
 
+    const [counting, setCounting] = React.useState(false)
     const nameArray = Object.entries(names);
 
     const handleFirst = (event) => {
@@ -241,14 +269,20 @@ function OracleTable(props) {
             value2,
             value3,
             value4,
-            value5
+            value5,
+            startDate: startDate == '' ? null : startDate.format('YYYY-MM-DD'),
+            endDate: startDate == '' ? null : endDate.format('YYYY-MM-DD'),
+            page
         }
+        console.log(req)
         axios.get('http://localhost:1415/get', {params: req}, {
                 cancelToken: request.token
             }).then(res => {
                 console.log(res.data)
-                setMainList(res.data)
+                setMainList(res.data.rows)
                 setLoading(false)
+                setCount(10000)
+                // countGet()
             })
 
 
@@ -258,6 +292,49 @@ function OracleTable(props) {
             setLoading(false)
         }
     }
+    // React.useEffect(() => {
+    //     while (counting == true) {
+    //         setCount(count + 10)
+    //     }
+    // })
+    const countGet = () => {
+        const request = axios.CancelToken.source()
+        setCounting(true)
+        const req = {
+            filter1: firstFilter,
+            filter2: secondFilter,
+            filter3: thirdFilter,
+            filter4: fourthFilter,
+            filter5: fifthFilter,
+            aOr1,
+            aOr2,
+            aOr3,
+            aOr4,
+            value1,
+            value2,
+            value3,
+            value4,
+            value5,
+            startDate: startDate == '' ? null : startDate.format('YYYY-MM-DD'),
+            endDate: startDate == '' ? null : endDate.format('YYYY-MM-DD'),
+            page
+        }
+        console.log(req)
+        axios.get('http://localhost:1415/count', {params: req}, {
+                cancelToken: request.token
+            }).then(res => {
+                setCount(res.data)
+                setCounting(false)
+            })
+
+
+        return () => {
+            // request.cancel()
+            console.log('asd')
+            setLoading(false)
+        }
+    }
+
 
     const beforeTableEncode = (data) => {
         const modifiedData = data.map((item) => {
@@ -273,11 +350,19 @@ function OracleTable(props) {
     
 
     const download = () => {
-        const data = mainList
-        const fileName = "set"
-        const exportType = exportFromJSON.types.csv
-        const encoding = 'windows-1252'
-        exportFromJSON({data, fileName, beforeTableEncode, exportType, encoding})
+        axios.get('http://localhost:1415/export-to-pdf', {responseType: 'blob'}).then(res=> {
+            const url = window.URL.createObjectURL(new Blob([res.data]))
+            const link = document.createElement('a')
+            link.href = url
+            link.setAttribute('download', 'document.pdf')
+            document.body.appendChild(link)
+            link.click()
+        })
+        // const data = mainList
+        // const fileName = "set"
+        // const exportType = exportFromJSON.types.csv
+        // const encoding = 'windows-1252'
+        // exportFromJSON({data, fileName, beforeTableEncode, exportType, encoding})
     }
     return (
         <div className="wholeBlock">
@@ -294,11 +379,28 @@ function OracleTable(props) {
                                 >
                                     <MenuItem value={'cfmMainCode'}>ИИН/БИН Субъекта</MenuItem>
                                     <MenuItem value={'messNumber'}>Внутренний для СФМ номер сообщения</MenuItem>
-                                    <MenuItem value={'cfmName'}>Код субъекта финансового мониторинга</MenuItem>
+                                    <MenuItem value={'cfmName'}>Наименование субъекта</MenuItem>
                                     <MenuItem value={'operNumber'}>Номер операции</MenuItem>
                                     <MenuItem value={'memberMaincode'}>ИИН/БИН Покупателя</MenuItem>
                             </Select>
                 </FormControl>
+                {firstFilter.length > 0 && (
+                    <>
+                    <FormControl size= "small" sx={{ m: 1, width: '90%' }} style={{ margin: '0 auto', marginBottom: '15px'}}>
+                        <LocalizationProvider dateAdapter={AdapterDayjs}>
+
+                            <DateField required label="Начало интервала"
+                                value={startDate} 
+                                format="YYYY/MM/DD"
+                                onChange= {e=> setStartDate(e)} size= "small" sx={{width: '100%', p: 0}} style={{ margin: '0 auto', marginBottom: '15px'}} />
+                            <DateField required label="Конец интервала"
+                                value={endDate} 
+                                format="YYYY/MM/DD"
+                                onChange={e=> setEndDate(e)} size= "small" sx={{width: '100%', p: 0}} style={{ margin: '0 auto', marginBottom: '15px'}} />
+                        </LocalizationProvider>
+                    </FormControl>
+                    </>
+                )}
                 {firstFilter == 'cfmMainCode' && (
                     <>
                         <TextField size= "small" sx={{width: '90%', p: 0}} style={{ margin: '0 auto', marginBottom: '15px'}} 
@@ -425,7 +527,7 @@ function OracleTable(props) {
                             >
                                 <MenuItem value={'cfmMainCode'}>ИИН/БИН Субъекта</MenuItem>
                                 <MenuItem value={'messNumber'}>Внутренний для СФМ номер сообщения</MenuItem>
-                                <MenuItem value={'cfmName'}>Код субъекта финансового мониторинга</MenuItem>
+                                <MenuItem value={'cfmName'}>Наименование субъекта</MenuItem>
                                 <MenuItem value={'operNumber'}>Номер операции</MenuItem>
                                 <MenuItem value={'memberMaincode'}>ИИН/БИН Покупателя</MenuItem>
                         </Select>
@@ -556,7 +658,7 @@ function OracleTable(props) {
                             >
                                 <MenuItem value={'cfmMainCode'}>ИИН/БИН Субъекта</MenuItem>
                                 <MenuItem value={'messNumber'}>Внутренний для СФМ номер сообщения</MenuItem>
-                                <MenuItem value={'cfmName'}>Код субъекта финансового мониторинга</MenuItem>
+                                <MenuItem value={'cfmName'}>Наименование субъекта</MenuItem>
                                 <MenuItem value={'operNumber'}>Номер операции</MenuItem>
                                 <MenuItem value={'memberMaincode'}>ИИН/БИН Покупателя</MenuItem>
                         </Select>
@@ -687,7 +789,7 @@ function OracleTable(props) {
                             >
                                 <MenuItem value={'cfmMainCode'}>ИИН/БИН Субъекта</MenuItem>
                                 <MenuItem value={'messNumber'}>Внутренний для СФМ номер сообщения</MenuItem>
-                                <MenuItem value={'cfmName'}>Код субъекта финансового мониторинга</MenuItem>
+                                <MenuItem value={'cfmName'}>Наименование субъекта</MenuItem>
                                 <MenuItem value={'operNumber'}>Номер операции</MenuItem>
                                 <MenuItem value={'memberMaincode'}>ИИН/БИН Покупателя</MenuItem>
                         </Select>
@@ -818,7 +920,7 @@ function OracleTable(props) {
                             >
                                 <MenuItem value={'cfmMainCode'}>ИИН/БИН Субъекта</MenuItem>
                                 <MenuItem value={'messNumber'}>Внутренний для СФМ номер сообщения</MenuItem>
-                                <MenuItem value={'cfmName'}>Код субъекта финансового мониторинга</MenuItem>
+                                <MenuItem value={'cfmName'}>Наименование субъекта</MenuItem>
                                 <MenuItem value={'operNumber'}>Номер операции</MenuItem>
                                 <MenuItem value={'memberMaincode'}>ИИН/БИН Покупателя</MenuItem>
                         </Select>
@@ -853,26 +955,31 @@ function OracleTable(props) {
                 )}
 
                 {firstFilter.length > 0 && (
+                    <>
 
                     <div style={{ marginTop: '50px', display: 'flex', justifyContent: 'flex-end', width: '90%'}}>
                         <Button
                             sx={{
                                 height: '34px',
-                            backgroundColor: "#33B6FF",
-                            color: 'white',
-                            width: '100px',
-                        }}
-                        variant="contained"
-                        onClick={getData}
-                        >
+                                backgroundColor: "#33B6FF",
+                                color: 'white',
+                                width: '100px',
+                            }}
+                            variant="contained"
+                            onClick={() => {
+                                setPage(0)
+                                getData()
+                            }}
+                            >
                             {!loading && (
                                 <span style={{ fontWeight: '600' }} className='buttonSearch'>Запрос</span>
-                            )}
+                                )}
                             {loading && (
                                 <span style={{ fontWeight: '600' }} className='buttonSearch'>Отмена</span>
-                            )}
+                                )}
                         </Button>
                     </div>
+                                </>
                 )}
             </div>
             <div className="tableBlock">
@@ -887,11 +994,28 @@ function OracleTable(props) {
                     )}
                 </div>
                 {!loading && (
+                    <>
+                    <div style={{display: 'flex', justifyContent: 'flex-start', float: 'right', marginRight: '5%'}}>
+                        <TableFooter >
+                            <TableRow >
+                                <TablePagination style={{borderBottom: 'hidden'}}
+                                    colSpan={3}
+                                    count={count}
+                                    rowsPerPage={10}
+                                    page={page}
+                                    onPageChange={handleChangePage}
+                                    ActionsComponent={TablePaginationActions}
+                                    rowsPerPageOptions={10}
+                                    />
+                            </TableRow>
+                        </TableFooter>
+                        </div>
                     <div style={{ marginTop: '100px', display: 'flex', justifyContent: 'flex-end', width: '95%'}}>
                         <IconButton onClick={download} aria-label="download" size="large">
                             <FileDownloadIcon fontSize="inherit" />
                         </IconButton>
                     </div>
+                    </>
                 )}
             </div>
         </div>
@@ -901,11 +1025,24 @@ function OracleTable(props) {
 
 function ResultTable(props) {
     const {list} = props
-    return (
+    const downloadSchema = (row) => {
+
+        axios.get('http://localhost:1415/export-to-pdf/' + row.messOfmId + '/' + row.memberId, {responseType: 'blob'}).then(res=> {
+            const url = window.URL.createObjectURL(new Blob([res.data]))
+            const link = document.createElement('a')
+            link.href = url
+            link.setAttribute('download', 'document.pdf')
+            document.body.appendChild(link)
+            link.click()
+        }) 
+    }
+  
+    return ( <>
         <TableContainer component={Paper}>
             <Table sx={{ minWidth: 650, whiteSpace: 'nowrap' }} size="small" aria-label="a dense table">
             <TableHead>
                 <TableRow>
+                <TableCell  sx={{  whiteSpace: 'nowrap', position: 'sticky', left: 0, zIndex: 1, backgroundColor: '#0D0F11'}}></TableCell>
                 {Object.values(dictionaryOfTable).map((column) => (
                     <TableCell sx={{ whiteSpace: 'nowrap' }}  key={column}>{column}</TableCell>
                     ))}
@@ -917,7 +1054,9 @@ function ResultTable(props) {
                     key={row.name}
                     sx={{ '&:last-child td, &:last-child th': { border: 0 } }}
                     >
-                    <TableCell component="th" scope="row">{row.messOfmId}</TableCell>
+
+                    <TableCell  sx={{ position: 'sticky', left: 0, zIndex: 1, backgroundColor: '#0D0F11'}}><p onClick={() => downloadSchema(row)}>Скачать</p></TableCell>
+                    <TableCell  component="th" scope="row">{row.messOfmId}</TableCell>
                     <TableCell align="right">{row.messNumber}</TableCell>
                     <TableCell align="right">{row.messDate}</TableCell>
                     <TableCell align="right">{row.messType}</TableCell>
@@ -994,7 +1133,70 @@ function ResultTable(props) {
             </TableBody>
             </Table>
         </TableContainer>
+        </>
     )
 }
-
+// interface TablePaginationActionsProps {
+//     count: number;
+//     page: number;
+//     rowsPerPage: number;
+//     onPageChange: (
+//       event: React.MouseEvent<HTMLButtonElement>,
+//       newPage: number,
+//     ) => void;
+//   }
+  
+  function TablePaginationActions(props) {
+    const theme = useTheme();
+    const { count, page, rowsPerPage, onPageChange } = props;
+  
+    const handleFirstPageButtonClick = (event) => {
+      onPageChange(event, 0);
+    };
+  
+    const handleBackButtonClick = (event) => {
+      onPageChange(event, page - 1);
+    };
+  
+    const handleNextButtonClick = (event) => {
+      onPageChange(event, page + 1);
+    };
+  
+    const handleLastPageButtonClick = (event) => {
+      onPageChange(event, Math.max(0, Math.ceil(count / rowsPerPage) - 1));
+    };
+  
+    return (
+      <Box sx={{ flexShrink: 0, ml: 2.5 }}>
+        {/* <IconButton
+          onClick={handleFirstPageButtonClick}
+          disabled={page === 0}
+          aria-label="first page"
+        >
+          {theme.direction === 'rtl' ? <LastPageIcon /> : <FirstPageIcon />}
+        </IconButton> */}
+        <IconButton
+          onClick={handleBackButtonClick}
+          disabled={page === 0}
+          aria-label="previous page"
+        >
+          {theme.direction === 'rtl' ? <KeyboardArrowRight /> : <KeyboardArrowLeft />}
+        </IconButton>
+        <IconButton
+          onClick={handleNextButtonClick}
+          disabled={page >= Math.ceil(count / rowsPerPage) - 1}
+          aria-label="next page"
+        >
+          {theme.direction === 'rtl' ? <KeyboardArrowLeft /> : <KeyboardArrowRight />}
+        </IconButton>
+        {/* <IconButton
+          onClick={handleLastPageButtonClick}
+          disabled={page >= Math.ceil(count / rowsPerPage) - 1}
+          aria-label="last page"
+        >
+          {theme.direction === 'rtl' ? <FirstPageIcon /> : <LastPageIcon />}
+        </IconButton> */}
+      </Box>
+    );
+  }
 export default OracleTable
