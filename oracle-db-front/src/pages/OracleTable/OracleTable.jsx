@@ -275,7 +275,7 @@ function OracleTable(props) {
             page
         }
         console.log(req)
-        axios.get('http://localhost:1415/get', {params: req}, {
+        axios.get('http://192.168.30.24:1415/get', {params: req}, {
                 cancelToken: request.token
             }).then(res => {
                 console.log(res.data)
@@ -320,7 +320,7 @@ function OracleTable(props) {
             page
         }
         console.log(req)
-        axios.get('http://localhost:1415/count', {params: req}, {
+        axios.get('http://192.168.30.24:1415/count', {params: req}, {
                 cancelToken: request.token
             }).then(res => {
                 setCount(res.data)
@@ -1027,7 +1027,7 @@ function ResultTable(props) {
     const {list} = props
     const downloadSchema = (row) => {
 
-        axios.get('http://localhost:1415/export-to-pdf/' + row.messOfmId + '/' + row.memberId, {responseType: 'blob'}).then(res=> {
+        axios.get('http://192.168.30.24:1415/export-to-pdf/' + row.messOfmId + '/' + row.memberId, {responseType: 'blob'}).then(res=> {
             const url = window.URL.createObjectURL(new Blob([res.data]))
             const link = document.createElement('a')
             link.href = url
@@ -1055,7 +1055,7 @@ function ResultTable(props) {
                     sx={{ '&:last-child td, &:last-child th': { border: 0 } }}
                     >
 
-                    <TableCell  sx={{ position: 'sticky', left: 0, zIndex: 1, backgroundColor: '#0D0F11'}}><p onClick={() => downloadSchema(row)}>Скачать</p></TableCell>
+                    <TableCell  sx={{ position: 'sticky', left: 0, zIndex: 1, backgroundColor: '#0D0F11'}}><p style={{cursor: 'pointer'}} onClick={() => downloadSchema(row)}>Скачать</p></TableCell>
                     <TableCell  component="th" scope="row">{row.messOfmId}</TableCell>
                     <TableCell align="right">{row.messNumber}</TableCell>
                     <TableCell align="right">{row.messDate}</TableCell>
