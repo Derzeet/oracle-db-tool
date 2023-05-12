@@ -7,7 +7,6 @@ import jakarta.persistence.Id;
 import jakarta.persistence.Table;
 import org.springframework.cglib.core.Local;
 
-import java.math.BigDecimal;
 import java.util.Date;
 
 @Entity
@@ -15,98 +14,98 @@ import java.util.Date;
 public class ResultFM {
     @Id
     @Nullable
-    @Column(name = "MESS_OFM_ID")
-    private BigDecimal messOfmId;
+    @Column(name = "mess_ofm_id")
+    private Long messOfmId;
 
     @Nullable
-    @Column(name = "MESS_NUMBER")
-    private BigDecimal messNumber;
+    @Column(name = "mess_number")
+    private Long messNumber;
 
     @Nullable
-    @Column(name = "MESS_DATE")
+    @Column(name = "mess_date")
     private Date messDate;
 
     @Nullable
-    @Column(name = "MESS_TYPE")
+    @Column(name = "mess_type")
     private String messType;
 
     @Nullable
-    @Column(name = "OPER_STATUS")
+    @Column(name = "oper_status")
     private String operStatus;
 
     @Nullable
-    @Column(name = "MESS_REASON")
+    @Column(name = "mess_reason")
     private String messReason;
 
     @Nullable
-    @Column(name = "CFM_CODE")
-    private BigDecimal cfmCode;
+    @Column(name = "cfm_code")
+    private Long cfmCode;
 
     @Nullable
-    @Column(name = "CFM_NAME")
+    @Column(name = "cfm_name")
     private String cfmName;
 
-    @Column(name = "CFM_MAINCODE")
+    @Column(name = "cfm_maincode")
     private String cfmMainCode;
 
     @Nullable
-    @Column(name = "CFM_SEAT_AREA")
+    @Column(name = "cfm_seat_area")
     private String cfmSeatArea;
 
     @Nullable
-    @Column(name = "CFM_SEAT_REGION")
+    @Column(name = "cfm_seat_region")
     private String cfmSeatRegion;
 
     @Nullable
-    @Column(name = "CFM_SEAT_SITY")
+    @Column(name = "cfm_seat_sity")
     private String cfmSeatCity;
 
     @Nullable
-    @Column(name = "CFM_SEAT_STREET")
+    @Column(name = "cfm_seat_street")
     private String cfmSeatStreet;
 
     @Nullable
-    @Column(name = "CFM_SEAT_HOUSE")
+    @Column(name = "cfm_seat_house")
     private String cfmSeatHouse;
 
     @Nullable
-    @Column(name = "CFM_SEAT_OFFICE")
+    @Column(name = "cfm_seat_office")
     private String cfmSeatOffice;
 
     @Nullable
-    @Column(name = "CFM_SEAT_POSTCODE")
+    @Column(name = "cfm_seat_postcode")
     private String cfmSeatPostcode;
 
     @Nullable
-    @Column(name = "CFM_ISAC")
-    private BigDecimal cfmIsac;
+    @Column(name = "cfm_isac")
+    private Long cfmIsac;
 
     @Nullable
-    @Column(name = "DOC_TYPE")
+    @Column(name = "doc_type")
     private String docType;
 
     @Nullable
-    @Column(name = "CFM_DOC_NUMBER")
+    @Column(name = "cfm_doc_number")
     private String cfmDocNumber;
 
     @Nullable
-    @Column(name = "CFM_DOC_SERIES")
+    @Column(name = "cfm_doc_series")
     private String cfmDocSeries;
 
     @Nullable
-    @Column(name = "CFM_DOC_WHOM")
+    @Column(name = "cfm_doc_whom")
     private String cfmDocWhom;
 
     @Nullable
-    @Column(name = "CFM_DOC_DATE")
+    @Column(name = "cfm_doc_date")
     private Date cfmDocDate;
 
     @Nullable
-    @Column(name = "OPER_NUMBER")
+    @Column(name = "oper_number")
     private String operNumber;
 
     @Nullable
-    @Column(name = "OPER_TYPE")
+    @Column(name = "oper_type")
     private String operType;
 
     @Nullable
@@ -114,209 +113,210 @@ public class ResultFM {
     private String operPaymentPurpose;
 
     @Nullable
-    @Column(name = "OPER_MEMBERS_COUNT")
-    private BigDecimal operMembersCount;
+    @Column(name = "oper_members_count")
+    private Long operMembersCount;
 
     @Nullable
-    @Column(name = "CURRENCY_TYPE")
+    @Column(name = "currency_type")
     private String currencyType;
 
     @Nullable
-    @Column(name = "OPER_CURRENCY_AMOUNT")
-    private BigDecimal operCurrencyAmount;
+    @Column(name = "oper_currency_amount")
+    private Long operCurrencyAmount;
 
     @Nullable
-    @Column(name = "OPER_TENGE_AMOUNT")
-    private BigDecimal operTengeAmount;
+    @Column(name = "oper_tenge_amount")
+    private Long operTengeAmount;
 
     @Nullable
-    @Column(name = "OPER_REASON")
+    @Column(name = "oper_reason")
     private String operReason;
 
     @Nullable
-    @Column(name = "OPER_DOC_DATE")
+    @Column(name = "oper_doc_date")
     private Date operDocDate;
 
     @Nullable
-    @Column(name = "OPER_DOC_NUMBER")
+    @Column(name = "oper_doc_number")
     private String operDocNumber;
 
     @Nullable
-    @Column(name = "SUSP_FIRST")
+    @Column(name = "susp_first")
     private String suspFirst;
 
     @Nullable
-    @Column(name = "SUSP_SECOND")
+    @Column(name = "susp_second")
     private String suspSecond;
 
     @Nullable
-    @Column(name = "SUSP_THIRD")
+    @Column(name = "susp_third")
     private String suspThird;
 
     @Nullable
-    @Column(name = "OPER_DOPINFO")
+    @Column(name = "oper_dopinfo")
     private String operDopInfo;
 
     @Nullable
-    @Column(name = "MEMBER_ID")
-    private BigDecimal memberId;
+    @Column(name = "member_id")
+    private Long memberId;
 
     @Nullable
-    @Column(name = "MEMBER_VID")
+    @Column(name = "member_vid")
     private String memberVid;
 
     @Nullable
-    @Column(name = "MEMBER_RESIDENCE")
-    private BigDecimal memberResidence;
+    @Column(name = "member_residence")
+    private Long memberResidence;
 
     @Nullable
-    @Column(name = "MEMBER_RESIDENCE_COUNTRYCODE")
-    private BigDecimal memberResidenceCountrycode;
+    @Column(name = "member_residence_countrycode")
+    private Long memberResidenceCountrycode;
 
     @Nullable
-    @Column(name = "MEMBER_TYPE")
+    @Column(name = "member_type")
     private String memberType;
 
     @Nullable
-    @Column(name = "MEMBER_FOREIGN")
+    @Column(name = "member_foreign")
     private String memberForeign;
 
     @Nullable
-    @Column(name = "MEMBER_BANK_CODE")
+    @Column(name = "member_bank_code")
     private String memberBankCode;
 
     @Nullable
-    @Column(name = "MEMBER_BANK_NAME")
+    @Column(name = "member_bank_name")
     private String memberBankName;
 
     @Nullable
-    @Column(name = "MEMBER_BANK_ACCOUNT")
+    @Column(name = "member_bank_account")
     private String memberBankAccount;
 
     @Nullable
-    @Column(name = "MEMBER_BANK_ADDRESS")
+    @Column(name = "member_bank_address")
     private String memberBankAddress;
 
     @Nullable
-    @Column(name = "MEMBER_UR_NAME")
+    @Column(name = "member_ur_name")
     private String memberUrName;
 
     @Nullable
-    @Column(name = "MEMBER_UR_FISTHEAD_NAME")
+    @Column(name = "member_ur_fisthead_name")
     private String memberUrFistHeadName;
 
     @Nullable
-    @Column(name = "MEMBER_OKED")
+    @Column(name = "member_oked")
     private String memberOked;
 
     @Nullable
-    @Column(name = "MEMBER_MAINCODE")
+    @Column(name = "member_maincode")
     private String memberMaincode;
 
     @Nullable
-    @Column(name = "MEMBER_AC_FIRSTNAME")
+    @Column(name = "member_ac_firstname")
     private String memberAcFirstName;
 
     @Nullable
-    @Column(name = "MEMBER_AC_SECONDNAME")
+    @Column(name = "member_ac_secondname")
     private String memberAcSecondName;
 
     @Nullable
-    @Column(name = "MEMBER_AC_MIDDLENAME")
+    @Column(name = "member_ac_middlename")
     private String memberAcMiddlename;
 
     @Nullable
-    @Column(name = "MEMBER_AC_DOC_TYPE")
+    @Column(name = "member_ac_doc_type")
     private String memberAcDocType;
 
     @Nullable
-    @Column(name = "MEMBER_AC_DOC_SERIES")
+    @Column(name = "member_ac_doc_series")
     private String memberAcDocSeries;
 
     @Nullable
-    @Column(name = "MEMBER_AC_DOC_WHOM")
+    @Column(name = "member_ac_doc_whom")
     private String memberAcDocWhom;
 
     @Nullable
-    @Column(name = "MEMBER_AC_DOC_DATE")
+    @Column(name = "member_ac_doc_date")
     private Date memberAcDocDate;
 
     @Nullable
-    @Column(name = "MEMBER_AC_BIRTH_DATE")
+    @Column(name = "member_ac_birth_date")
     private Date memberAcBirthDate;
 
     @Nullable
-    @Column(name = "MEMBER_AC_BIRTH_PLACE")
+    @Column(name = "member_ac_birth_place")
     private String memberAcBirthPlace;
 
     @Nullable
-    @Column(name = "MEMBER_REG_AREA")
+    @Column(name = "member_reg_area")
     private String memberRegArea;
 
     @Nullable
-    @Column(name = "MEMBER_REG_REGION")
+    @Column(name = "member_reg_region")
     private String memberRegRegion;
 
     @Nullable
-    @Column(name = "MEMBER_REG_SITY")
+    @Column(name = "member_reg_sity")
     private String memberRegSity;
 
     @Nullable
-    @Column(name = "MEMBER_REG_STREET")
+    @Column(name = "member_reg_street")
     private String memberRegStreet;
 
     @Nullable
-    @Column(name = "MEMBER_REG_HOUSE")
+    @Column(name = "member_reg_house")
     private String memberRegHouse;
 
     @Nullable
-    @Column(name = "MEMBER_REG_OFFICE")
+    @Column(name = "member_reg_office")
     private String memberRegOffice;
 
     @Nullable
-    @Column(name = "MEMBER_PHONE")
+    @Column(name = "member_phone")
     private String memberPhone;
 
     @Nullable
-    @Column(name = "MEMBER_EMAIL")
+    @Column(name = "member_email")
     private String memberEmail;
 
     @Nullable
-    @Column(name = "MEMBER_SEAT_AREA")
+    @Column(name = "member_seat_area")
     private String memberSeatArea;
 
     @Nullable
-    @Column(name = "MEMBER_SEAT_REGION")
+    @Column(name = "member_seat_region")
     private String memberSeatRegion;
 
     @Nullable
-    @Column(name = "MEMBER_SEAT_SITY")
+    @Column(name = "member_seat_sity")
     private String memberSeatSity;
 
     @Nullable
-    @Column(name = "MEMBER_SEAT_STREET")
+    @Column(name = "member_seat_street")
     private String memberSeatStreet;
 
     @Nullable
-    @Column(name = "MEMBER_SEAT_HOUSE")
+    @Column(name = "member_seat_house")
     private String memberSeatHouse;
 
     @Nullable
-    @Column(name = "MEMBER_SEAT_OFFICE")
+    @Column(name = "member_seat_office")
     private String memberSeatOffice;
-    public BigDecimal getMessOfmId() {
+
+    public Long getMessOfmId() {
         return messOfmId;
     }
 
-    public void setMessOfmId(BigDecimal messOfmId) {
+    public void setMessOfmId(Long messOfmId) {
         this.messOfmId = messOfmId;
     }
 
-    public BigDecimal getMessNumber() {
+    public Long getMessNumber() {
         return messNumber;
     }
 
-    public void setMessNumber(BigDecimal messNumber) {
+    public void setMessNumber(Long messNumber) {
         this.messNumber = messNumber;
     }
 
@@ -352,11 +352,11 @@ public class ResultFM {
         this.messReason = messReason;
     }
 
-    public BigDecimal getCfmCode() {
+    public Long getCfmCode() {
         return cfmCode;
     }
 
-    public void setCfmCode(BigDecimal cfmCode) {
+    public void setCfmCode(Long cfmCode) {
         this.cfmCode = cfmCode;
     }
 
@@ -432,11 +432,11 @@ public class ResultFM {
         this.cfmSeatPostcode = cfmSeatPostcode;
     }
 
-    public BigDecimal getCfmIsac() {
+    public Long getCfmIsac() {
         return cfmIsac;
     }
 
-    public void setCfmIsac(BigDecimal cfmIsac) {
+    public void setCfmIsac(Long cfmIsac) {
         this.cfmIsac = cfmIsac;
     }
 
@@ -504,11 +504,11 @@ public class ResultFM {
         this.operPaymentPurpose = operPaymentPurpose;
     }
 
-    public BigDecimal getOperMembersCount() {
+    public Long getOperMembersCount() {
         return operMembersCount;
     }
 
-    public void setOperMembersCount(BigDecimal operMembersCount) {
+    public void setOperMembersCount(Long operMembersCount) {
         this.operMembersCount = operMembersCount;
     }
 
@@ -520,19 +520,19 @@ public class ResultFM {
         this.currencyType = currencyType;
     }
 
-    public BigDecimal getOperCurrencyAmount() {
+    public Long getOperCurrencyAmount() {
         return operCurrencyAmount;
     }
 
-    public void setOperCurrencyAmount(BigDecimal operCurrencyAmount) {
+    public void setOperCurrencyAmount(Long operCurrencyAmount) {
         this.operCurrencyAmount = operCurrencyAmount;
     }
 
-    public BigDecimal getOperTengeAmount() {
+    public Long getOperTengeAmount() {
         return operTengeAmount;
     }
 
-    public void setOperTengeAmount(BigDecimal operTengeAmount) {
+    public void setOperTengeAmount(Long operTengeAmount) {
         this.operTengeAmount = operTengeAmount;
     }
 
@@ -592,11 +592,11 @@ public class ResultFM {
         this.operDopInfo = operDopInfo;
     }
 
-    public BigDecimal getMemberId() {
+    public Long getMemberId() {
         return memberId;
     }
 
-    public void setMemberId(BigDecimal memberId) {
+    public void setMemberId(Long memberId) {
         this.memberId = memberId;
     }
 
@@ -608,19 +608,19 @@ public class ResultFM {
         this.memberVid = memberVid;
     }
 
-    public BigDecimal getMemberResidence() {
+    public Long getMemberResidence() {
         return memberResidence;
     }
 
-    public void setMemberResidence(BigDecimal memberResidence) {
+    public void setMemberResidence(Long memberResidence) {
         this.memberResidence = memberResidence;
     }
 
-    public BigDecimal getMemberResidenceCountrycode() {
+    public Long getMemberResidenceCountrycode() {
         return memberResidenceCountrycode;
     }
 
-    public void setMemberResidenceCountrycode(BigDecimal memberResidenceCountrycode) {
+    public void setMemberResidenceCountrycode(Long memberResidenceCountrycode) {
         this.memberResidenceCountrycode = memberResidenceCountrycode;
     }
 

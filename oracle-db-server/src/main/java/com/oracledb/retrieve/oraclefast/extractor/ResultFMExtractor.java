@@ -15,13 +15,13 @@ public class ResultFMExtractor implements ResultSetExtractor<List<ResultFM>> {
         List<ResultFM> data = new ArrayList<>();
         while (rs.next()) {
             ResultFM res = new ResultFM();
-            res.setMessOfmId(rs.getBigDecimal("MESS_OFM_ID"));
-            res.setMessNumber(rs.getBigDecimal("MESS_NUMBER"));
+            res.setMessOfmId(rs.getLong("MESS_OFM_ID"));
+            res.setMessNumber(rs.getLong("MESS_NUMBER"));
             res.setMessDate(rs.getDate("MESS_DATE"));
             res.setMessType(rs.getString("MESS_TYPE"));
             res.setOperStatus(rs.getString("OPER_STATUS"));
             res.setMessReason(rs.getString("MESS_REASON"));
-            res.setCfmCode(rs.getBigDecimal("CFM_CODE"));
+            res.setCfmCode(rs.getLong("CFM_CODE"));
             res.setCfmName(rs.getString("CFM_NAME"));
             res.setCfmMainCode(rs.getString("CFM_MAINCODE"));
             res.setCfmSeatArea(rs.getString("CFM_SEAT_AREA"));
@@ -31,7 +31,7 @@ public class ResultFMExtractor implements ResultSetExtractor<List<ResultFM>> {
             res.setCfmSeatHouse(rs.getString("CFM_SEAT_HOUSE"));
             res.setCfmSeatOffice(rs.getString("CFM_SEAT_OFFICE"));
             res.setCfmSeatPostcode(rs.getString("CFM_SEAT_POSTCODE"));
-            res.setCfmIsac(rs.getBigDecimal("CFM_ISAC"));
+            res.setCfmIsac(rs.getLong("CFM_ISAC"));
             res.setDocType(rs.getString("DOC_TYPE"));
             res.setCfmDocNumber(rs.getString("CFM_DOC_NUMBER"));
             res.setCfmDocSeries(rs.getString("CFM_DOC_SERIES"));
@@ -40,10 +40,10 @@ public class ResultFMExtractor implements ResultSetExtractor<List<ResultFM>> {
             res.setOperNumber(rs.getString("OPER_NUMBER"));
             res.setOperType(rs.getString("OPER_TYPE"));
             res.setOperPaymentPurpose(rs.getString("назначение платежа"));
-            res.setOperMembersCount(rs.getBigDecimal("OPER_MEMBERS_COUNT"));
+            res.setOperMembersCount(rs.getLong("OPER_MEMBERS_COUNT"));
             res.setCurrencyType(rs.getString("CURRENCY_TYPE"));
-            res.setOperCurrencyAmount(rs.getBigDecimal("OPER_CURRENCY_AMOUNT"));
-            res.setOperTengeAmount(rs.getBigDecimal("OPER_TENGE_AMOUNT"));
+            res.setOperCurrencyAmount(rs.getLong("OPER_CURRENCY_AMOUNT"));
+            res.setOperTengeAmount(rs.getLong("OPER_TENGE_AMOUNT"));
             res.setOperReason(rs.getString("OPER_REASON"));
             res.setOperDocDate(rs.getDate("OPER_DOC_DATE"));
             res.setOperDocNumber(rs.getString("OPER_DOC_NUMBER"));
@@ -51,10 +51,10 @@ public class ResultFMExtractor implements ResultSetExtractor<List<ResultFM>> {
             res.setSuspSecond(rs.getString("SUSP_SECOND"));
             res.setSuspThird(rs.getString("SUSP_THIRD"));
             res.setOperDopInfo(rs.getString("OPER_DOPINFO"));
-            res.setMemberId(rs.getBigDecimal("MEMBER_ID"));
+            res.setMemberId(rs.getLong("MEMBER_ID"));
             res.setMemberVid(rs.getString("MEMBER_VID"));
-            res.setMemberResidence(rs.getBigDecimal("MEMBER_RESIDENCE"));
-            res.setMemberResidenceCountrycode(rs.getBigDecimal("MEMBER_RESIDENCE_COUNTRYCODE"));
+            res.setMemberResidence(rs.getLong("MEMBER_RESIDENCE"));
+            res.setMemberResidenceCountrycode(rs.getLong("MEMBER_RESIDENCE_COUNTRYCODE"));
             res.setMemberType(rs.getString("MEMBER_TYPE"));
             res.setMemberForeign(rs.getString("MEMBER_FOREIGN"));
             res.setMemberBankCode(rs.getString("MEMBER_BANK_CODE"));

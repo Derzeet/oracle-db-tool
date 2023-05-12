@@ -48,7 +48,7 @@ public class BaseController {
 //        Integer count = jdbcTemplate.queryForObject(sql.replace("*", "COUNT(*)"), Integer.class);
 //        System.out.println(count);
         int page = Integer.parseInt(req.get("page")) * 10;
-        List<ResultFM> r = jdbcTemplate.query(sql + "OFFSET " + page + " ROWS FETCH NEXT 10 ROWS ONLY", new ResultFMExtractor());
+        List<ResultFM> r = jdbcTemplate.query(sql + "OFFSET " + page + " LIMIT 10", new ResultFMExtractor());
         for (ResultFM re: r) {
             System.out.println(re.getCfmMainCode());
         }

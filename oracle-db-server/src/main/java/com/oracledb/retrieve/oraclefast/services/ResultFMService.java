@@ -82,9 +82,9 @@ public class ResultFMService {
         dict.put("memberMaincode", "MEMBER_MAINCODE");
         String sql = "";
         if (req.get("startDate")!=null) {
-            sql =  "SELECT * FROM KFM.RESULT_FM WHERE MESS_DATE BETWEEN TO_DATE('" + req.get("startDate") + "', 'YYYY-MM-DD') AND TO_DATE('" + req.get("endDate")  + "', 'YYYY-MM-DD') AND ";
+            sql =  "SELECT * FROM RESULT_FM WHERE MESS_DATE BETWEEN TO_DATE('" + req.get("startDate") + "', 'YYYY-MM-DD') AND TO_DATE('" + req.get("endDate")  + "', 'YYYY-MM-DD') AND ";
         } else {
-            sql =  "SELECT * FROM KFM.RESULT_FM WHERE ";
+            sql =  "SELECT * FROM RESULT_FM WHERE ";
         }
         if (req.get("value1").equals("")) {
             System.out.println("value1 is not empty");
